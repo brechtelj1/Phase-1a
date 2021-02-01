@@ -43,6 +43,7 @@ void P1ContextInit(void){
 int P1ContextCreate(void (*func)(void *), void *arg, int stacksize, int *cid) {
     int result = P1_SUCCESS;
     int i = 0;
+    USLOSS_PTE *pageTable;
     // find a free context and initialize it
     // allocate the stack, specify the startFunc, etc.
 
@@ -66,7 +67,8 @@ int P1ContextCreate(void (*func)(void *), void *arg, int stacksize, int *cid) {
     contexts[i].stackStart = malloc(stacksize);
     currentCid = i;
     // initialize the context and allocate page table within call and launch context
-    USLOSS_ContextInit(&contexts[i].context,contexts[i].stackStart,stacksize,P3_AllocatePageTable(i),launch());
+    pageTable = P3_AllocatePageTable(currentCid);
+    USLOSS_ContextInit(&contexts[i].context,contexts[i].stackStart,stacksize,pageTable,launch);
     return result;
 }
 
