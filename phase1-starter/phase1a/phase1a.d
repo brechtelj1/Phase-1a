@@ -1,2 +1,2 @@
 phase1a.o: phase1a.c ../phase1Int.h ../phase1.h \
- /home/james/include/usloss.h /home/james/include/usyscall.h
+ /home/zacheryb16/include/usloss.h /home/zacheryb16/include/usyscall.h

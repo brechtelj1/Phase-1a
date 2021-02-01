@@ -64,12 +64,9 @@ int P1ContextCreate(void (*func)(void *), void *arg, int stacksize, int *cid) {
     contexts[i].available = 0;
     contexts[i].startArg = arg;
     contexts[i].stackStart = malloc(stacksize);
-
-    // initialize the context and allocate page table within call  
-    USLOSS_ContextInit(&contexts[i].context,contexts[i].stackStart,stacksize,P3_AllocatePageTable(i),func);
     currentCid = i;
-    // launch function
-    launch();
+    // initialize the context and allocate page table within call and launch context
+    USLOSS_ContextInit(&contexts[i].context,contexts[i].stackStart,stacksize,P3_AllocatePageTable(i),launch());
     return result;
 }
 
@@ -93,7 +90,19 @@ int P1ContextSwitch(int cid) {
 // Frees the stack and marks the context as unused
 int P1ContextFree(int cid) {
     int result = P1_SUCCESS;
-    // free the stack and mark the context as unused
+    if(contexts[cid].available == 1){
+        return P1_INVALID_CID;
+    }
+    else if(cid == currentCid){
+        return P1_CONTEXT_IN_USE;
+    }
+    else{
+        P3_FreePageTable(cid);
+        contexts[cid].available = 1;
+        free(contexts[cid].stackStart);
+        contexts[cid].startArg = NULL;
+        contexts[cid].startFunc = NULL;
+    }
     return result;
 }
 
